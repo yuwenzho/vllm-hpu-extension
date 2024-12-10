@@ -53,7 +53,7 @@ def main(args):
         try:
             tmp_input = tokenizer.apply_chat_template(
                 tmp_conversation, chat_template=chat_template, tokenize=False, truncation=True)
-        except ValueError:
+        except:
             # Case when given model don't need any chat-template and can process raw string without any system tokens, e.g. facebook/opt-125m
             tmp_input = f"{system_prompt}. {question}"
         inputs.append(tmp_input)
