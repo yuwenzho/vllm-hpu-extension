@@ -51,6 +51,7 @@ if __name__ == "__main__":
 
     llm = vllm.LLM(
         model=args.model,
+        enforce_eager=True,
         dtype=torch.bfloat16,
         quantization='inc',
         max_num_seqs=args.batch_size,
