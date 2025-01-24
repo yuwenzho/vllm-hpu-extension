@@ -17,6 +17,8 @@ from vllm.logger import init_logger
 
 logger = init_logger(__name__)
 
+import os
+FP32_SOFTMAX = os.environ.get('VLLM_FP32_SOFTMAX', 'False').lower() == 'true'
 
 def grouped_max(block_max, batch_size, block_groups):
     orig_dtype = block_max.dtype
@@ -104,7 +106,7 @@ def flat_pa(query, key_cache, value_cache, block_list, block_mapping,
         key = key.transpose(2, 3)
 
     attn = matmul_qk_op(query, key)
-    if 'fp32_softmax' in enabled_flags():
+    if FP32_SOFTMAX:
         attn = attn.float()
         htcore.mark_step()
     attn = attn + block_bias
@@ -144,7 +146,7 @@ def prompt_attention(
             if attn_bias is not None:
                 attn_bias = attn_bias.unsqueeze(2)
         attn_weights = matmul_qk_op(query * scale, key.transpose(-1, -2))
-        if 'fp32_softmax' in enabled_flags():
+        if FP32_SOFTMAX:
             attn_weights = attn_weights.float()
             htcore.mark_step()
         if attn_bias is not None:
